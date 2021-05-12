@@ -4,6 +4,9 @@ import requests
 import json
 import time
 
+from baloontip import balloon_tip
+
+
 BASE_URL = "https://cdn-api.co-vin.in/api/v2"
 
 AUTH_BASE = BASE_URL + "/auth/public"
@@ -37,7 +40,7 @@ class Cowin:
         }
         resp = requests.post(
             GENERATE_OTP, data=json.dumps(payload), headers=self.headers)
-        print(resp.content)
+        # print(resp.content)
         transaction_id = resp.json().get("txnId")
         return transaction_id
 
@@ -50,7 +53,7 @@ class Cowin:
         resp = requests.post(
             CONFIRM_OTP, data=json.dumps(payload), headers=self.headers)
         self.token = resp.json().get("token")
-        print("Token: {}".format(self.token))
+        # print("Token: {}".format(self.token))
         self.headers["Authorization"] = "Bearer {}".format(self.token)
 
 
@@ -97,7 +100,6 @@ if __name__ == "__main__":
         "Gautam Budha Nagar": [650, 18],
         "Agra": [622, 18],
         "Lucknow": [670, 18],
-        "Nainital": [709, 18],
     }
     while True:
         for district_name, district_id_age in districts.items():
@@ -105,10 +107,12 @@ if __name__ == "__main__":
                 district_id_age[0], district_id_age[1])
             if available_sessions:
                 for center, session in available_sessions:
-                    print("{} slots are available in "
-                          "{} in center {} on {}".format(
+                    message = (
+                        "{} slots are available in {} in center {} on {}".format(
                             session["available_capacity"], district_name,
-                            center["name"], session["date"]))
-                print("\n\n\n\n")
+                            center["name"], session["date"])
+                    )
+                    print(message)
+                    balloon_tip("Slot available in {}".format(district_name), message)
         print("Sleeping for 3 minutes...")
         time.sleep(180)

@@ -2,6 +2,8 @@ from datetime import date
 import hashlib
 import requests
 import json
+from os import path
+import sys
 import time
 
 from win10toast import ToastNotifier
@@ -91,6 +93,7 @@ class Cowin:
 
 
 if __name__ == "__main__":
+    bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
     mobile_number = input("Please enter your mobile number: ")
     cowin = Cowin(mobile_number)
     transaction_id = cowin.sendOtp()
@@ -123,6 +126,7 @@ if __name__ == "__main__":
                     toaster.show_toast(
                         "Slot available in {}".format(district_name),
                         message,
-                        duration=10)
+                        duration=10,
+                        icon_path=path.join(bundle_dir, "icon.ico"))
         print("Sleeping for 3 minutes...")
         time.sleep(180)

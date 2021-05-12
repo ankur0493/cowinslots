@@ -72,16 +72,19 @@ class Cowin:
             "district_id": district_id,
             "date": date.today().strftime("%d-%m-%Y"),
         }
-        resp = requests.get(
-            SESSIONS_BY_DISTRICT, params=query_params, headers=self.headers)
-        centers = json.loads(resp.content).get("centers")
-        return self._filter_available_sessions_by_age(centers, age)
+        try:
+            resp = requests.get(
+                SESSIONS_BY_DISTRICT, params=query_params, headers=self.headers)
+            centers = json.loads(resp.content).get("centers")
+            return self._filter_available_sessions_by_age(centers, age)
+        except:
+            return []
 
 
 if __name__ == "__main__":
     mobile_number = input("Please enter your mobile number: ")
     cowin = Cowin(mobile_number)
-    transaction_id = cowin.sendOtp(mobile_number)
+    transaction_id = cowin.sendOtp()
     if transaction_id:
         otp = input("Enter the OTP received on {}: ".format(mobile_number))
         cowin.confirmOtp(transaction_id, otp)

@@ -123,7 +123,6 @@ if __name__ == "__main__":
                     toaster.show_toast(
                         "Slot available in {}".format(district_name),
                         message,
-                        duration=5,
-                        icon_path="icon.ico")
+                        duration=10)
         print("Sleeping for 3 minutes...")
         time.sleep(180)

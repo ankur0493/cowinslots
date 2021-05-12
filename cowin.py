@@ -4,7 +4,7 @@ import requests
 import json
 import time
 
-from baloontip import balloon_tip
+from win10toast import ToastNotifier
 
 
 BASE_URL = "https://cdn-api.co-vin.in/api/v2"
@@ -21,6 +21,8 @@ APPOINTMENT_BASE = BASE_URL + "/appointment/sessions"
 SESSIONS_BY_PIN = APPOINTMENT_BASE + "/calendarByPin"
 SESSIONS_BY_DISTRICT = APPOINTMENT_BASE + "/calendarByDistrict"
 SESSIONS_BY_CENTER = APPOINTMENT_BASE + "calenderByCenter"
+
+toaster = ToastNotifier()
 
 
 class Cowin:
@@ -41,8 +43,12 @@ class Cowin:
         resp = requests.post(
             GENERATE_OTP, data=json.dumps(payload), headers=self.headers)
         # print(resp.content)
-        transaction_id = resp.json().get("txnId")
-        return transaction_id
+        try:
+            transaction_id = resp.json().get("txnId")
+            return transaction_id
+        except:
+            print("Can't send OTP. Please try again in some time")
+        return ""
 
 
     def confirmOtp(self, transaction_id, otp):
@@ -88,9 +94,10 @@ if __name__ == "__main__":
     mobile_number = input("Please enter your mobile number: ")
     cowin = Cowin(mobile_number)
     transaction_id = cowin.sendOtp()
-    if transaction_id:
-        otp = input("Enter the OTP received on {}: ".format(mobile_number))
-        cowin.confirmOtp(transaction_id, otp)
+    if not transaction_id:
+        os.exit(1)
+    otp = input("Enter the OTP received on {}: ".format(mobile_number))
+    cowin.confirmOtp(transaction_id, otp)
     districts = {
         "Panipat": [195, 18],
         "East Delhi": [145, 18],
@@ -113,6 +120,10 @@ if __name__ == "__main__":
                             center["name"], session["date"])
                     )
                     print(message)
-                    balloon_tip("Slot available in {}".format(district_name), message)
+                    toaster.show_toast(
+                        "Slot available in {}".format(district_name),
+                        message,
+                        duration=5,
+                        icon_path="icon.ico")
         print("Sleeping for 3 minutes...")
         time.sleep(180)

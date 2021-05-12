@@ -1,4 +1,6 @@
 # -- coding: utf-8 --
+
+# Thanks to https://gist.github.com/wontoncc/1808234
  
 from win32api import *
 from win32gui import *
